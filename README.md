@@ -1,6 +1,6 @@
 # IP Webcam Timelapse Recorder
 
-Records a time-lapse video from your phone's IP webcam in the background. No preview window — you provide the stream link and the speed, and it quietly records until you press Stop.
+Records a time-lapse video from your phone's IP webcam in the background.You provide the stream link and the speed, and it quietly records until you press Stop.
 
 ## What you need
 
