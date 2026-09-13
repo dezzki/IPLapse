@@ -34,7 +34,7 @@ http://192.168.1.5:8080/video
 1. Launch IPLapse (from the Start Menu, desktop shortcut, or the EXE).
 2. Paste your stream URL into the **Stream URL** box.
 3. Enter a **speed** (see below).
-4. Press **Start** — it records in the background.
+4. Press **Start**. The link is tested first — if it can't be reached, you'll see an error with troubleshooting hints and recording won't start.
 5. Press **Stop** (or close the window) when done. The video is saved automatically.
 
 Videos are saved in **`Videos\IPLapse`** in your user folder, named like:
@@ -62,8 +62,12 @@ A camera frame is captured every `speed / 30` seconds (30 = output frames per se
 
 ## Troubleshooting
 
-**"Could not open stream"**
-Double-check the URL ends in `/video`, the app is on **Start server**, and both devices are on the same network. Make sure your PC's firewall allows the connection.
+**"Could not open stream" / invalid link**
+IPLapse tests your link before recording and refuses invalid ones. Check that:
+- the URL ends in `/video` (e.g. `http://192.168.1.5:8080/video`),
+- the IP Webcam app is on **Start server**,
+- your PC and phone are on the same Wi-Fi network,
+- your PC's firewall allows the connection.
 
 **Preview/video looks choppy or slow**
 The camera app decodes video with your PC's CPU. Lower the **resolution** in the IP Webcam app (buttons on the phone screen) for smoother performance.

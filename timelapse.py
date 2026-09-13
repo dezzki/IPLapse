@@ -77,14 +77,14 @@ def parent_alive(pid):
         return False
 
 
-def open_stream(url):
+def open_stream(url, timeout=15, fallback=True):
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "IPWebcamTimelapse/1.0"})
-        stream = urllib.request.urlopen(req, timeout=15)
+        stream = urllib.request.urlopen(req, timeout=timeout)
         buf = b""
-        deadline = time.time() + 15
+        deadline = time.time() + timeout
         while time.time() < deadline:
-            chunk = stream.read(65536)
+            chunk = stream.read(4096)
             if not chunk:
                 break
             buf += chunk
@@ -100,12 +100,36 @@ def open_stream(url):
         stream.close()
     except Exception:
         pass
+    if not fallback:
+        raise SystemExit(f"Could not open stream: {url}")
     cap = cv2.VideoCapture(url)
     if cap.isOpened():
         ok, frame = cap.read()
         if ok and frame is not None:
             return "cv", cap, frame
     raise SystemExit(f"Could not open stream: {url}")
+
+
+def check_stream(url):
+    try:
+        mode, src, _ = open_stream(url, timeout=6, fallback=False)
+    except SystemExit:
+        return False, (
+            "Could not open the stream.\n\n"
+            "Check that:\n"
+            "- the URL ends in /video (e.g. http://192.168.1.5:8080/video)\n"
+            "- the IP Webcam app is running (Start server)\n"
+            "- your PC and phone are on the same Wi-Fi network\n"
+            "- your firewall allows the connection"
+        )
+    if mode == "raw":
+        try:
+            src.close()
+        except Exception:
+            pass
+    else:
+        src.release()
+    return True, None
 
 
 def make_writer(path, fps, width, height):
@@ -321,18 +345,7 @@ def gui():
 
         root.after(0, done)
 
-    def start():
-        url = url_var.get().strip()
-        speed = speed_var.get().strip()
-        if not url:
-            messagebox.showerror("Missing URL", "Please enter your camera stream URL.")
-            return
-        try:
-            speed_f = float(speed)
-        except ValueError:
-            messagebox.showerror("Invalid number", "Speed must be a number.")
-            return
-
+    def begin_recording(url, speed_f):
         stop_file = os.path.join(
             tempfile.gettempdir(),
             f"iptl_stop_{os.getpid()}_{int(time.time() * 1000)}.flag",
@@ -384,6 +397,36 @@ def gui():
         stop_btn.config(state="normal")
         status_var.set("Recording in the background... press Stop to finish and save.")
         threading.Thread(target=watch, args=(proc,), daemon=True).start()
+
+    def start():
+        url = url_var.get().strip()
+        speed = speed_var.get().strip()
+        if not url:
+            messagebox.showerror("Missing URL", "Please enter your camera stream URL.")
+            return
+        try:
+            speed_f = float(speed)
+        except ValueError:
+            messagebox.showerror("Invalid number", "Speed must be a number.")
+            return
+
+        start_btn.config(state="disabled")
+        stop_btn.config(state="disabled")
+        status_var.set("Testing connection...")
+
+        def do_check():
+            ok, err = check_stream(url)
+            root.after(0, lambda: on_check(ok, err))
+
+        def on_check(ok, err):
+            if not ok:
+                start_btn.config(state="normal")
+                status_var.set(err.replace("\n", " "))
+                messagebox.showerror("Invalid stream URL", err)
+                return
+            begin_recording(url, speed_f)
+
+        threading.Thread(target=do_check, daemon=True).start()
 
     def stop_recording():
         proc = state["proc"]
