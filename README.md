@@ -1,11 +1,23 @@
-# IP Webcam Timelapse Recorder
+# IPLapse
 
-Records a time-lapse video from your phone's IP webcam in the background.You provide the stream link and the speed, and it quietly records until you press Stop.
+Records a time-lapse video from your phone's IP webcam in the background. You provide the stream link and the speed, and it quietly records until you press Stop. No preview window, no clutter.
 
 ## What you need
 
 - A phone running the **IP Webcam** app (or any camera that serves an MJPEG stream URL).
 - Your PC and phone on the same Wi-Fi network.
+
+## Installation
+
+**Option 1 — Installer (recommended):**
+
+Run **`IPLapse-Setup.exe`** (in the `installer` folder) and follow the wizard. It installs IPLapse with Start Menu and (optional) desktop shortcuts, plus an uninstaller.
+
+To uninstall later, use **Settings → Apps → IPLapse**, or run `unins000.exe` from the install folder.
+
+**Option 2 — Portable:**
+
+Double-click **`IPWebcamTimelapse.exe`** (in the `dist` folder). No install needed.
 
 ## Get your stream URL
 
@@ -19,13 +31,13 @@ http://192.168.1.5:8080/video
 
 ## How to use
 
-1. Double-click **`IPWebcamTimelapse.exe`** (in the `dist` folder).
+1. Launch IPLapse (from the Start Menu, desktop shortcut, or the EXE).
 2. Paste your stream URL into the **Stream URL** box.
 3. Enter a **speed** (see below).
 4. Press **Start** — it records in the background.
 5. Press **Stop** (or close the window) when done. The video is saved automatically.
 
-Videos are saved in the **`timelapses`** folder next to the EXE, named like:
+Videos are saved in **`Videos\IPLapse`** in your user folder, named like:
 
 ```
 timelapse_20260101_153000.mp4
@@ -69,3 +81,11 @@ To build the EXE yourself:
 pip install pyinstaller
 pyinstaller --noconfirm --onefile --windowed --name IPWebcamTimelapse timelapse.py
 ```
+
+To build the installer (requires [Inno Setup 6](https://jrsoftware.org/isinfo.php)):
+
+```bash
+"C:\Program Files (x86)\Inno Setup 6\ISCC.exe" IPLapse.iss
+```
+
+The installer is output to the `installer` folder as `IPLapse-Setup.exe`.

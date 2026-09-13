@@ -1,6 +1,7 @@
 # Build artifacts
 build/
 dist/
+installer/
 
 # Recorded timelapses
 timelapses/

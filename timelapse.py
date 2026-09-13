@@ -17,9 +17,7 @@ DEFAULT_URL = "http://192.168.1.5:8080/video"
 
 
 def default_output_dir():
-    if getattr(sys, "frozen", False):
-        return os.path.join(os.path.dirname(sys.executable), "timelapses")
-    return "timelapses"
+    return os.path.join(os.path.expanduser("~"), "Videos", "IPLapse")
 
 
 def parse_args():
